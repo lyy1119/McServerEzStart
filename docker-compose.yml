@@ -1,0 +1,30 @@
+services:
+  minecraft:
+    # image: minecraft-easysetup
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: minecraftserver
+    environment:
+      - CORE_URL=https://api.papermc.io/v2/projects/paper/versions/1.18.2/builds/388/downloads/paper-1.18.2-388.jar  # 替换为实际地址
+      - MIN_RAM=1G
+      - MAX_RAM=1G
+      # - OTHER_ARGS= ... # 其他启动参数
+    restart: unless-stopped
+    volumes: # 根据情况映射文件
+      - /opt/Minecraft/world:/minecraft/world
+      - /opt/Minecraft/mods:/minecraft/mods
+      - /opt/Minecraft/backups:/minecraft/backups
+      - mcserver_1:/minecraft
+    networks:
+      - mcnet
+
+# 如有必要，创建网络，以下是外部网络，适合集群服务器
+# 记得创建网络
+# docker network create mcnet
+networks:
+  mcnet:
+    external: true
+
+volumes:
+  mcserver_1:
