@@ -33,4 +33,5 @@ fi
 
 # 启动 Minecraft 服务端
 echo "Starting Minecraft server..."
-exec java $(cat $JVM_ARGS_FILE) -jar "$JAR_NAME" --nogui
+mkfifo /tmp/input
+tail -f /tmp/input | java $(cat $JVM_ARGS_FILE) -jar "$JAR_NAME" --nogui
