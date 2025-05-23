@@ -3,6 +3,8 @@ services:
     # image: minecraft-easysetup
     build:
       context: .
+      args:
+        - JAVA_VERSION=21 # 指定java版本 必要
       dockerfile: Dockerfile
     container_name: minecraftserver
     environment:
