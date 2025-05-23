@@ -33,5 +33,10 @@ fi
 
 # 启动 Minecraft 服务端
 echo "Starting Minecraft server..."
-mkfifo /tmp/input
+if [-e "/tmp/input"]; then
+    echo "/tmp/input exists, skip create file..."
+else
+    echo "create /tmp/input..."
+    mkfifo /tmp/input
+fi
 tail -f /tmp/input | java $(cat $JVM_ARGS_FILE) -jar "$JAR_NAME" --nogui
