@@ -1,5 +1,5 @@
 # 基础镜像
-FROM openjdk:${JAVA_VERSION}-jdk-slim
+FROM openjdk:21-jdk-slim
 # 设置时区 上海
 RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shanghai' > /etc/timezone
 # 工作目录

@@ -14,19 +14,24 @@ services:
       # - OTHER_ARGS= ... # 其他启动参数
     restart: unless-stopped
     volumes: # 根据情况映射文件
-      - /opt/Minecraft/world:/minecraft/world
-      - /opt/Minecraft/mods:/minecraft/mods
-      - /opt/Minecraft/backups:/minecraft/backups
-      - mcserver_1:/minecraft
-    networks:
-      - mcnet
+      - share_volume:/minecraft
 
 # 如有必要，创建网络，以下是外部网络，适合集群服务器
 # 记得创建网络
 # docker network create mcnet
-networks:
-  mcnet:
-    external: true
+  filebrowser:
+    image: filebrowser/filebrowser:s6
+    container_name: filebrowser
+    ports:
+      - "8080:80"
+    volumes:
+      - share_volume:/srv
+    environment:
+      - PUID=${PUID}
+      - PGID=${PGID}
+
+
 
 volumes:
-  mcserver_1:
+  share_volume:
+
