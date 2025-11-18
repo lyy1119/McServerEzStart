@@ -1,7 +1,5 @@
 #!/bin/bash
 
-#!/bin/bash
-
 set -e
 
 # 默认值
@@ -11,17 +9,19 @@ MAX_RAM="${MAX_RAM:-2G}"
 JAR_NAME="server.jar"
 JVM_ARGS_FILE="jvm.args"
 
-# 下载 server.jar（如果不存在）
-if [ ! -f "$JAR_NAME" ]; then
-    if [ -n "$CORE_URL" ]; then
-        echo "Downloading Minecraft core from $CORE_URL..."
-        curl -o "$JAR_NAME" -L "$CORE_URL"
+# 下载 server.jar（如果不存在且参数有值）
+if [ -n "$CORE_URL" ]; then
+    if [ ! -f "$JAR_NAME" ]; then # 不存在核心文件
+        if [ -n "$CORE_URL" ]; then
+            echo "Downloading Minecraft core from $CORE_URL..."
+            curl -o "$JAR_NAME" -L "$CORE_URL"
+        else
+            echo "Error: server.jar not found and CORE_URL is not provided."
+            exit 1
+        fi
     else
-        echo "Error: server.jar not found and CORE_URL is not provided."
-        exit 1
+        echo "$JAR_NAME already exists, skipping download."
     fi
-else
-    echo "$JAR_NAME already exists, skipping download."
 fi
 
 # 写入 JVM 参数文件
@@ -33,10 +33,11 @@ fi
 
 # 启动 Minecraft 服务端
 echo "Starting Minecraft server..."
-if [-e "/tmp/input"]; then
+if [ -e "/tmp/input" ]; then
     echo "/tmp/input exists, skip create file..."
 else
     echo "create /tmp/input..."
     mkfifo /tmp/input
 fi
+
 tail -f /tmp/input | java $(cat $JVM_ARGS_FILE) -jar "$JAR_NAME" --nogui

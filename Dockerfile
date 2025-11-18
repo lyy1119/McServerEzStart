@@ -5,17 +5,13 @@ RUN ln -sf /usr/share/zoneinfo/Asia/Shanghai /etc/localtime && echo 'Asia/Shangh
 # 工作目录
 WORKDIR /minecraft
 # 复制文件
-COPY ./startup.sh /minecraft/startup.sh
-RUN chmod +x /minecraft/startup.sh
+COPY . .
 
-# 安装vim方便修改
-RUN apt-get update && \
-    apt-get install -y --no-install-recommends vim && \
-    apt-get install -y --no-install-recommends curl && \
-    apt-get clean && \
-    rm -rf /var/lib/apt/lists/*
+# eula，使用重定向，覆盖写入
+RUN echo "eula=true" > /minecraft/eula.txt
+# bash脚本权限
+RUN chmod +x /minecraft/*.sh
 
-# eula
-RUN echo "eula=true" >> /minecraft/eula.txt
-# 运行命令
+# 运行服务器
+ENTRYPOINT ["/minecraft/entrypoint.sh"]
 CMD ["/minecraft/startup.sh"]

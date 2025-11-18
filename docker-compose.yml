@@ -1,37 +1,37 @@
 services:
-  minecraft:
-    # image: minecraft-easysetup
+  # 使用替换功能将 'minecraftserver' 换成服务端名或者你想要的容器名
+  minecraftserver:
     build:
       context: .
       args:
-        - JAVA_VERSION=21 # 指定java版本 必要
+        - JAVA_VERSION=21 # 指定java版本（目前没用）
       dockerfile: Dockerfile
     container_name: minecraftserver
+    stop_grace_period: 30s
     environment:
-      - CORE_URL=https://api.papermc.io/v2/projects/paper/versions/1.18.2/builds/388/downloads/paper-1.18.2-388.jar  # 替换为实际地址
-      - MIN_RAM=1G
-      - MAX_RAM=1G
-      # - OTHER_ARGS= ... # 其他启动参数
+      - CORE_URL=https://api.papermc.io/v2/projects/paper/versions/1.18.2/builds/388/downloads/paper-1.18.2-388.jar  # 如果存在，自动下载并以该核心启动服务器，或者不填写这个变量，直接从现有服务端核心启动
+      - MIN_RAM=8G # 最小分配内存
+      - MAX_RAM=8G # 最大分配内存
+      - OTHER_ARGS= ... # 其他启动参数
     restart: unless-stopped
+    ports:
+      - "<IP:PORT>:25565" # 如0.0.0.0:25565:25565
     volumes: # 根据情况映射文件
-      - share_volume:/minecraft
+      - minecraftserver:/minecraft
 
-# 如有必要，创建网络，以下是外部网络，适合集群服务器
-# 记得创建网络
-# docker network create mcnet
+# 创建filebrowser，方便修改配置文件、一键下载存档等 默认账户密码均为admin
   filebrowser:
     image: filebrowser/filebrowser:s6
-    container_name: filebrowser
+    container_name: filebrowser_minecraftserver
     ports:
-      - "8080:80"
+      - "<IP:PORT>:80" # 如0.0.0.0:12345:80
     volumes:
-      - share_volume:/srv
+      - minecraftserver:/srv
     environment:
-      - PUID=${PUID}
-      - PGID=${PGID}
+      - PUID=0 # 设置权限与组，便于修改文件
+      - PGID=0
 
-
-
+# 创建卷，用于存储
 volumes:
-  share_volume:
+  minecraftserver:
 
