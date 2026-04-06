@@ -12,7 +12,7 @@ services:
       - CORE_URL=https://api.papermc.io/v2/projects/paper/versions/1.18.2/builds/388/downloads/paper-1.18.2-388.jar  # 如果存在，自动下载并以该核心启动服务器，或者不填写这个变量，直接从现有服务端核心启动
       - MIN_RAM=8G # 最小分配内存
       - MAX_RAM=8G # 最大分配内存
-      - OTHER_ARGS= ... # 其他启动参数
+      - OTHER_ARGS="-XX:+UseZGC -XX:+ZGenerational -XX:+AlwaysPreTouch --add-opens java.base/java.lang=ALL-UNNAMED --add-opens java.base/java.util=ALL-UNNAMED --add-opens java.base/java.lang.reflect=ALL-UNNAMED -Dfile.encoding=UTF-8" # 其他启动参数，java21 zgc优化，java21以下需更换
     restart: unless-stopped
     ports:
       - "<IP:PORT>:25565" # 如0.0.0.0:25565:25565
